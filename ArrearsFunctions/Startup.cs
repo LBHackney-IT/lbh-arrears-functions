@@ -23,13 +23,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Diagnostics.CodeAnalysis;
-using Hackney.Core.Logging;
-using Hackney.Core.Middleware.Logging;
-using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Hackney.Core.HealthCheck;
-using Hackney.Core.Middleware.CorrelationId;
-using Hackney.Core.DynamoDb.HealthCheck;
-using Hackney.Core.DynamoDb;
+//using Hackney.Core.Logging;
+//using Hackney.Core.Middleware.Logging;
+//using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+//using Hackney.Core.HealthCheck;
+//using Hackney.Core.Middleware.CorrelationId;
+//using Hackney.Core.DynamoDb.HealthCheck;
+//using Hackney.Core.DynamoDb;
 using Hackney.Core.Middleware.Exception;
 
 namespace ArrearsFunctions
@@ -64,7 +64,7 @@ namespace ArrearsFunctions
 
             services.AddSingleton<IApiVersionDescriptionProvider, DefaultApiVersionDescriptionProvider>();
 
-            services.AddDynamoDbHealthCheck<DatabaseEntity>();
+            //services.AddDynamoDbHealthCheck<DatabaseEntity>();
 
             services.AddSwaggerGen(c =>
             {
@@ -123,9 +123,9 @@ namespace ArrearsFunctions
                     c.IncludeXmlComments(xmlPath);
             });
 
-            services.ConfigureLambdaLogging(Configuration);
+            //services.ConfigureLambdaLogging(Configuration);
 
-            services.AddLogCallAspect();
+            //services.AddLogCallAspect();
 
             ConfigureDbContext(services);
             //TODO: For DynamoDb, remove the line above and uncomment the line below.
@@ -168,8 +168,8 @@ namespace ArrearsFunctions
                   .AllowAnyMethod()
                   .WithExposedHeaders("x-correlation-id"));
 
-            app.UseCorrelationId();
-            app.UseLoggingScope();
+            //app.UseCorrelationId();
+            //app.UseLoggingScope();
             app.UseCustomExceptionHandler(logger);
 
             if (env.IsDevelopment())
@@ -205,12 +205,12 @@ namespace ArrearsFunctions
                 // SwaggerGen won't find controllers that are routed via this technique.
                 endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
 
-                endpoints.MapHealthChecks("/api/v1/healthcheck/ping", new HealthCheckOptions()
-                {
-                    ResponseWriter = HealthCheckResponseWriter.WriteResponse
-                });
+                //endpoints.MapHealthChecks("/api/v1/healthcheck/ping", new HealthCheckOptions()
+                //{
+                //    ResponseWriter = HealthCheckResponseWriter.WriteResponse
+                //});
             });
-            app.UseLogCall();
+            //app.UseLogCall();
         }
     }
 }

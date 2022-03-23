@@ -8,20 +8,9 @@ provider:
     apiGateway: true
   vpc: ${self:custom.vpc.${opt:stage}}
   stage: ${opt:stage}
-  # TODO: Enable this line if DynamoDb is in use
-  #account: ${opt:account}
-  region: eu-west-2
-  apiKeys:
-    - secureAccess:
-      - api-key-${self:service}-${self:provider.stage}
-  usagePlan:
-    - secureAccess:
-        throttle:
-          burstLimit: 200
-          rateLimit: 100
+  region: eu-west-2  
 
 package:
-# TODO: Rename zipfile in build.sh and build.cmd to match this
   artifact: ./bin/release/netcoreapp3.1/lbh-arrears-functions.zip
 
 functions:
@@ -30,9 +19,8 @@ functions:
     handler: ArrearsFunctions::ArrearsFunctions.LambdaEntryPoint::FunctionHandlerAsync
     role: lambdaExecutionRole
     environment:
-# TODO: Create ssm variables for this API's postgres mirror then rename lbh-arrears-functions below to match api name
-# TODO: Remove this line if DynamoDb is being used
-      CONNECTION_STRING: Host=${ssm:/lbh-arrears-functions/${self:provider.stage}/postgres-hostname};Port=${ssm:/lbh-arrears-functions/${self:provider.stage}/postgres-port};Database=lbh-arrears-functions-mirror;Username=${ssm:/lbh-arrears-functions/${self:provider.stage}/postgres-username};Password=${ssm:/lbh-arrears-functions/${self:provider.stage}/postgres-password}
+      CONNECTION_STRING_INTERIM_SOLUTION: Data Source=${ssm:/housing-finance/${self:provider.stage}/db-host},${ssm:/housing-finance/${self:provider.stage}/db-port};Initial Catalog=${ssm:/housing-finance/${self:provider.stage}/db-database};Integrated Security=False;User Id=${ssm:/housing-finance/${self:provider.stage}/db-username};Password=${ssm:/housing-finance/${self:provider.stage}/db-password};Encrypt=False;TrustServerCertificate=False;MultipleActiveResultSets=True;
+      CONNECTION_STRING_INCOME: Server=${ssm:/housing-finance/${self:provider.stage}/mysql-host};Port=${ssm:/housing-finance/${self:provider.stage}/mysql-port};Database=${ssm:/housing-finance/${self:provider.stage}/mysql-database};Uid=${ssm:/housing-finance/${self:provider.stage}/mysql-username};Pwd=${ssm:/housing-finance/${self:provider.stage}/mysql-password};
     events:
       - http:
           path: /{proxy+}
@@ -108,14 +96,20 @@ resources:
 custom:
   vpc:
     development:
+      securityGroupIds:
+        - sg-00d2e14f38245dd0b
       subnetIds:
-        - subnet-0deabb5d8fb9c3446
-        - subnet-000b89c249f12a8ad
+        - subnet-0140d06fb84fdb547
+        - subnet-05ce390ba88c42bfd
     staging:
+      securityGroupIds:
+        - sg-00c197e980177983d
       subnetIds:
-        - subnet-06d3de1bd9181b0d7
-        - subnet-0ed7d7713d1127656
+        - subnet-0743d86e9b362fa38
+        - subnet-0ea0020a44b98a2ca
     production:
+      securityGroupIds:
+        - sg-02a377899622e884c
       subnetIds:
-        - subnet-01d3657f97a243261
-        - subnet-0b7b8fea07efabf34
+        - subnet-0beb266003a56ca82
+        - subnet-06a697d86a9b6ed01
