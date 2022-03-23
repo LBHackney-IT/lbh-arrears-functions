@@ -1,11 +1,11 @@
 version: "3.2"
 
 services:
-  base-api:
-    image: base-api
+  lbh-arrears-functions:
+    image: lbh-arrears-functions
     build:
      context: .
-     dockerfile: BaseApi/Dockerfile
+     dockerfile: ArrearsFunctions/Dockerfile
      args:
      - LBHPACKAGESTOKEN=${LBHPACKAGESTOKEN}
     ports:
@@ -27,11 +27,11 @@ services:
     volumes:
       - ./database:/docker-entrypoint-initdb.d
 
-  base-api-test:
-    image: base-api-test
+  lbh-arrears-functions-test:
+    image: lbh-arrears-functions-test
     build:
       context: .
-      dockerfile: BaseApi.Tests/Dockerfile
+      dockerfile: ArrearsFunctions.Tests/Dockerfile
       args:
       - LBHPACKAGESTOKEN=${LBHPACKAGESTOKEN}
     environment:
